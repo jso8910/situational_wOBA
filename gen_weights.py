@@ -15,6 +15,7 @@ import os
 import csv
 from typing import Dict
 import tqdm
+import os.path
 
 
 def base_outs_weights(plays: list[Dict[str, str]]) -> list[list[str | int]]:
@@ -23,31 +24,9 @@ def base_outs_weights(plays: list[Dict[str, str]]) -> list[list[str | int]]:
     """
     run_exp_by_sit = [
         # ["Outs", "Runner state", "RUNS", "COUNT", "AVG"],
-        [0, 0b000, 0, 0, 0.0],
-        [1, 0b000, 0, 0, 0.0],
-        [2, 0b000, 0, 0, 0.0],
-        [0, 0b001, 0, 0, 0.0],
-        [1, 0b001, 0, 0, 0.0],
-        [2, 0b001, 0, 0, 0.0],
-        [0, 0b010, 0, 0, 0.0],
-        [1, 0b010, 0, 0, 0.0],
-        [2, 0b010, 0, 0, 0.0],
-        [0, 0b011, 0, 0, 0.0],
-        [1, 0b011, 0, 0, 0.0],
-        [2, 0b011, 0, 0, 0.0],
-        [0, 0b100, 0, 0, 0.0],
-        [1, 0b100, 0, 0, 0.0],
-        [2, 0b100, 0, 0, 0.0],
-        [0, 0b101, 0, 0, 0.0],
-        [1, 0b101, 0, 0, 0.0],
-        [2, 0b101, 0, 0, 0.0],
-        [0, 0b110, 0, 0, 0.0],
-        [1, 0b110, 0, 0, 0.0],
-        [2, 0b110, 0, 0, 0.0],
-        [0, 0b111, 0, 0, 0.0],
-        [1, 0b111, 0, 0, 0.0],
-        [2, 0b111, 0, 0, 0.0],
+        [n % 3, n // 3, 0, 0, 0.0] for n in range(24)
     ]
+    # re = [[n % 3, n//3, 0, 0, 0.0] for n in range(24)]
 
     for play in tqdm.tqdm(plays):
         base_state = int(play["END_BASES_CD"])
@@ -65,54 +44,8 @@ def base_outs_weights(plays: list[Dict[str, str]]) -> list[list[str | int]]:
     avg_outcomes: list[list[int | dict[str, int | dict[str, int]]]] = [
         # ["Outs", "Base State", "1B",
         #     "2B", "3B", "HR", "UBB", "HBP", "K", "Out"],
-        [0, 0b000, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b000, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b000, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [0, 0b001, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b001, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b001, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [0, 0b010, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b010, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b010, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [0, 0b011, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b011, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b011, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [0, 0b100, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b100, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b100, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [0, 0b101, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b101, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b101, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [0, 0b110, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b110, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b110, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [0, 0b111, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [1, 0b111, {},
-         {}, {}, {}, {}, {}, {}, {}],
-        [2, 0b111, {},
-         {}, {}, {}, {}, {}, {}, {}],
+        [n % 3, n // 3, {},
+         {}, {}, {}, {}, {}, {}, {}] for n in range(24)
         # ["Outs", "Base State", "1B",
         #     "2B", "3B", "HR", "UBB", "HBP", "K", "Out"],
     ]
@@ -177,61 +110,10 @@ def base_outs_weights(plays: list[Dict[str, str]]) -> list[list[str | int]]:
         # ["Outs", "Base State", "1B",
         #     "2B", "3B", "HR", "UBB", "HBP", "K", "Out", "LI"],
         # (Runs scored + New run expectancy) - existing run expectancy
-        [0, 0b000, 0,
-            0, 0, 0, 0, 0, 0, 0, 0.9],
-        [1, 0b000, 0,
-            0, 0, 0, 0, 0, 0, 0, 0.6],
-        [2, 0b000, 0,
-            0, 0, 0, 0, 0, 0, 0, 0.4],
-        [0, 0b001, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.5],
-        [1, 0b001, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.2],
-        [2, 0b001, 0,
-            0, 0, 0, 0, 0, 0, 0, 0.8],
-        [0, 0b010, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.3],
-        [1, 0b010, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.2],
-        [2, 0b010, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.2],
-        [0, 0b011, 0,
-            0, 0, 0, 0, 0, 0, 0, 2.1],
-        [1, 0b011, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.9],
-        [2, 0b011, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.7],
-        [0, 0b100, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.2],
-        [1, 0b100, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.1],
-        [2, 0b100, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.3],
-        [0, 0b101, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.7],
-        [1, 0b101, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.7],
-        [2, 0b101, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.8],
-        [0, 0b110, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.5],
-        [1, 0b110, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.6],
-        [2, 0b110, 0,
-            0, 0, 0, 0, 0, 0, 0, 2.2],
-        [0, 0b111, 0,
-            0, 0, 0, 0, 0, 0, 0, 2.3],
-        [1, 0b111, 0,
-            0, 0, 0, 0, 0, 0, 0, 2.5],
-        [2, 0b111, 0,
-            0, 0, 0, 0, 0, 0, 0, 2.8],
+        # Really long array is all the leverage indices
+        [n % 3, n // 3, 0,
+            0, 0, 0, 0, 0, 0, 0, [0.9, 0.6, 0.4, 1.5, 1.2, 0.8, 1.3, 1.2, 1.2, 2.1, 1.9, 1.7, 1.2, 1.1, 1.3, 1.7, 1.7, 1.8, 1.5, 1.6, 2.2, 2.3, 2.5, 2.8][n]] for n in range(24)
     ]
-
-    # for idx in range(len(run_exp)):
-    #     # We don't want to consider leverage index
-    #     for idx_inner in range(2, len(run_exp[idx]) - 1):
-    #         run_exp[idx][idx_inner] = {
-    #             "runs_scored": 0, "n_scenarios": 0, "avg": 0.0}
 
     for idx in range(len(run_exp)):
         # We don't want to consider leverage index
@@ -250,35 +132,9 @@ def base_outs_weights(plays: list[Dict[str, str]]) -> list[list[str | int]]:
             # Subtract value of the out (value of out is negative)
             run_exp[idx][idx_inner] -= run_exp[idx][-2]
 
-    # __import__("pprint").pprint(run_exp)
-    # __import__("pprint").pprint(avg_outcomes)
-
     numerators = [
         # ["Outs", "Base State", "numerator", "<on base>/numerator"],
-        [0, 0b000, 0, 0],
-        [1, 0b000, 0, 0],
-        [2, 0b000, 0, 0],
-        [0, 0b001, 0, 0],
-        [1, 0b001, 0, 0],
-        [2, 0b001, 0, 0],
-        [0, 0b010, 0, 0],
-        [1, 0b010, 0, 0],
-        [2, 0b010, 0, 0],
-        [0, 0b011, 0, 0],
-        [1, 0b011, 0, 0],
-        [2, 0b011, 0, 0],
-        [0, 0b100, 0, 0],
-        [1, 0b100, 0, 0],
-        [2, 0b100, 0, 0],
-        [0, 0b101, 0, 0],
-        [1, 0b101, 0, 0],
-        [2, 0b101, 0, 0],
-        [0, 0b110, 0, 0],
-        [1, 0b110, 0, 0],
-        [2, 0b110, 0, 0],
-        [0, 0b111, 0, 0],
-        [1, 0b111, 0, 0],
-        [2, 0b111, 0, 0],
+        [n % 3, n // 3, 0, 0] for n in range(24)
     ]
 
     # Based on 2022 https://www.baseball-reference.com/leagues/split.cgi?t=b&lg=MLB&year=2022
@@ -303,9 +159,6 @@ def base_outs_weights(plays: list[Dict[str, str]]) -> list[list[str | int]]:
         "SLG": .393
     }
 
-    # ["Outs", "Base State", "1B",
-    #     "2B", "3B", "HR", "UBB", "HBP", "K", "Out", "LI"],
-    # __import__('pprint').pprint(run_exp)
     for idx in range(len(numerators)):
         numerators[idx][2] = (avg_batting_line["Hits"] -
                               avg_batting_line["2B"] - avg_batting_line["3B"] - avg_batting_line["HR"])*run_exp[idx][2] + avg_batting_line["2B"]*run_exp[idx][3] + \
@@ -317,8 +170,6 @@ def base_outs_weights(plays: list[Dict[str, str]]) -> list[list[str | int]]:
         # Don't include 2 inputs and LI
         for idx_inner in range(2, len(run_exp[idx]) - 1):
             run_exp[idx][idx_inner] *= numerators[idx][3]
-
-    # __import__('pprint').pprint(run_exp)
 
     # Header
     run_exp.insert(0, ["Outs State", "Base State", "1B", "2B",
@@ -338,13 +189,20 @@ parser.add_argument('--use-innings', '-i',
 args = parser.parse_args(sys.argv[1:])
 
 if args.start_year > args.end_year:
-    print("START_YEAR must be less than END_YEAR")
+    print("START_YEAR must be less than END_YEAR", file=sys.stderr)
     sys.exit(1)
 elif args.start_year < 1915 or args.end_year > 2021:
-    print("START_YEAR and END_YEAR must be between 1915 and 2021. If 2022 or a future year has been added to retrosheet, feel free to edit this file.")
+    print("START_YEAR and END_YEAR must be between 1915 and 2021. If 2022 or a future year has been added to retrosheet, feel free to edit this file.", file=sys.stderr)
     sys.exit(1)
 
+if not os.path.isdir("chadwick_csv"):
+    print("The folder chadwick_csv doesn't exist. Have you run retrosheet_to_csv.sh?", file=sys.stderr)
+    sys.exit(1)
 files = sorted(os.listdir("chadwick_csv"))
+if not len(files):
+    print("The folder chadwick_csv doesn't have any folders. Have you run retrosheet_to_csv.sh?", file=sys.stderr)
+    sys.exit(1)
+
 files_filtered = []
 for file in files:
     if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
