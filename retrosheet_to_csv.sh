@@ -8,8 +8,8 @@ if [ ! -d downloads ]; then
 fi
 
 mkdir -p chadwick_csv
-rm -rf downloads/*.ROS
-rm -rf downloads/*.EDN
+# rm -rf downloads/*.ROS
+# rm -rf downloads/*.EDN
 pushd downloads
 # Removed *.EVE because that's generally playoffs
 for filename in *.EVN *.EVA; do

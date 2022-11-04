@@ -59,62 +59,62 @@ def base_out_swOBA(plays: list[Dict[str, str]], player_id: str, weights: list[Di
         return -1
     return swOBA_numerator / swOBA_denominator
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--player-id', '-p',
-                    help="Retrosheet ID of the player you want to calculate the swOBA of", type=str, required=True)
-parser.add_argument('--use-innings', '-i',
-                    help="Turn this on if you want to use the innings weights csv.", type=str, required=False, default=False)
-parser.add_argument('--start-year', '-s',
-                    help="Start year of data gathering (defaults to 2000 for a somewhat reasonable default)", type=int, default=2000)
-parser.add_argument('--end-year', '-e',
-                    help="End year of data gathering (defaults to 2021, current retrosheet year as of coding)", type=int, default=2021)
-
-args = parser.parse_args(sys.argv[1:])
-
-if args.start_year > args.end_year:
-    print("START_YEAR must be less than END_YEAR")
-    sys.exit(1)
-elif args.start_year < 1915 or args.end_year > 2021:
-    print("START_YEAR and END_YEAR must be between 1915 and 2021. If 2022 or a future year has been added to retrosheet, feel free to edit this file.")
-    sys.exit(1)
-
-if not os.path.isdir("chadwick_csv"):
-    print("The folder chadwick_csv doesn't exist. Have you run retrosheet_to_csv.sh?", file=sys.stderr)
-    sys.exit(1)
-files = sorted(os.listdir("chadwick_csv"))
-if not len(files):
-    print("The folder chadwick_csv doesn't have any folders. Have you run retrosheet_to_csv.sh?", file=sys.stderr)
-    sys.exit(1)
-
-files = sorted(os.listdir("chadwick_csv"))
-files_filtered = []
-for file in files:
-    if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
-        continue
-    else:
-        files_filtered.append(file)
-plays: list[Dict[str, str]] = []
-
-for file in tqdm.tqdm(files_filtered):
-    if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
-        continue
-    file = "chadwick_csv/" + file
-    with open(file, "r") as f:
-        reader = csv.DictReader(f)
-        plays.extend(list(reader))
-
-if args.use_innings:
-    raise NotImplementedError()
-else:
-    if not os.path.isfile("base_out_weights.csv"):
-        print("base_out_weights.csv not found. Have you run avgoutcomes.py?", file=sys.stderr)
+def main(start_year: int, end_year: int, use_innings: bool, player_id: str):
+    if args.start_year > args.end_year:
+        print("START_YEAR must be less than END_YEAR")
         sys.exit(1)
-    with open("base_out_weights.csv", "r") as f:
-        weights = list(csv.DictReader(
-            f, quoting=csv.QUOTE_NONNUMERIC, quotechar='"'))
-    swOBA = round(base_out_swOBA(plays, args.player_id, list(weights)), 3)
-    if swOBA < 0:
-        print("Player didn't have any plate appearances in this time period. Please check the retrosheet player ID is correct.")
+    elif args.start_year < 1915 or args.end_year > 2021:
+        print("START_YEAR and END_YEAR must be between 1915 and 2021. If 2022 or a future year has been added to retrosheet, feel free to edit this file.")
+        sys.exit(1)
+
+    if not os.path.isdir("chadwick_csv"):
+        print("The folder chadwick_csv doesn't exist. Have you run retrosheet_to_csv.sh?", file=sys.stderr)
+        sys.exit(1)
+    files = sorted(os.listdir("chadwick_csv"))
+    if not len(files):
+        print("The folder chadwick_csv doesn't have any folders. Have you run retrosheet_to_csv.sh?", file=sys.stderr)
+        sys.exit(1)
+
+    files = sorted(os.listdir("chadwick_csv"))
+    files_filtered = []
+    for file in files:
+        if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
+            continue
+        else:
+            files_filtered.append(file)
+    plays: list[Dict[str, str]] = []
+
+    for file in tqdm.tqdm(files_filtered):
+        if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
+            continue
+        file = "chadwick_csv/" + file
+        with open(file, "r") as f:
+            reader = csv.DictReader(f)
+            plays.extend(list(reader))
+
+    if args.use_innings:
+        raise NotImplementedError()
     else:
-        print(f"{swOBA:.3f}")
+        if not os.path.isfile("base_out_weights.csv"):
+            print("base_out_weights.csv not found. Have you run avgoutcomes.py?", file=sys.stderr)
+            sys.exit(1)
+        with open("base_out_weights.csv", "r") as f:
+            weights = list(csv.DictReader(
+                f, quoting=csv.QUOTE_NONNUMERIC, quotechar='"'))
+        # swOBA = round(base_out_swOBA(plays, args.player_id, list(weights)), 3)
+        return base_out_swOBA(plays, args.player_id, list(weights))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--player-id', '-p',
+                        help="Retrosheet ID of the player you want to calculate the swOBA of", type=str, required=True)
+    parser.add_argument('--use-innings', '-i',
+                        help="Turn this on if you want to use the innings weights csv.", type=str, required=False, default=False)
+    parser.add_argument('--start-year', '-s',
+                        help="Start year of data gathering (defaults to 2000 for a somewhat reasonable default)", type=int, default=2000)
+    parser.add_argument('--end-year', '-e',
+                        help="End year of data gathering (defaults to 2021, current retrosheet year as of coding)", type=int, default=2021)
+
+    args = parser.parse_args(sys.argv[1:])
+
+    print(main(args.start_year, args.end_year, args.use_innings, args.player_id))

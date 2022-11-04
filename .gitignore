@@ -1,4 +1,6 @@
 chadwick_csv/*
 downloads/*
 venv/
-base_out_weights.csv
+*.csv
+__pycache__/
+scratch.py
