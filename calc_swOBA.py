@@ -1,13 +1,13 @@
 import argparse
 import sys
 import csv
-from typing import Dict
+from typing import Dict, Any
 import os
 import tqdm
 import os.path
 
 
-def base_out_swOBA(plays: list[Dict[str, str]], player_id: str, weights: list[Dict[str, str | int]]) -> float:
+def base_out_swOBA(plays: list[Dict[str, str]], player_id: str, weights: list[dict[str | Any, str | int | Any]]) -> float:
     swOBA_numerator = 0
     swOBA_denominator = 0
     """
@@ -35,28 +35,29 @@ def base_out_swOBA(plays: list[Dict[str, str]], player_id: str, weights: list[Di
             case 3:
                 swOBA_denominator += 1
             case 14:
-                swOBA_numerator += weights[sit_idx]["UBB"]
+                swOBA_numerator += int(weights[sit_idx]["UBB"])
                 swOBA_denominator += 1
             case 16:
-                swOBA_numerator += weights[sit_idx]["HBP"]
+                swOBA_numerator += int(weights[sit_idx]["HBP"])
                 swOBA_denominator += 1
             case 19:
                 swOBA_denominator += 1
             case 20:
-                swOBA_numerator += weights[sit_idx]["1B"]
+                swOBA_numerator += int(weights[sit_idx]["1B"])
                 swOBA_denominator += 1
             case 21:
-                swOBA_numerator += weights[sit_idx]["2B"]
+                swOBA_numerator += int(weights[sit_idx]["2B"])
                 swOBA_denominator += 1
             case 22:
-                swOBA_numerator += weights[sit_idx]["3B"]
+                swOBA_numerator += int(weights[sit_idx]["3B"])
                 swOBA_denominator += 1
             case 23:
-                swOBA_numerator += weights[sit_idx]["HR"]
+                swOBA_numerator += int(weights[sit_idx]["HR"])
                 swOBA_denominator += 1
+            case _: pass
 
     if swOBA_denominator == 0:
-        return -1
+        return -1.0
     return swOBA_numerator / swOBA_denominator
 
 def main(start_year: int, end_year: int, use_innings: bool, player_id: str):
@@ -76,7 +77,7 @@ def main(start_year: int, end_year: int, use_innings: bool, player_id: str):
         sys.exit(1)
 
     files = sorted(os.listdir("chadwick_csv"))
-    files_filtered = []
+    files_filtered: list[str] = []
     for file in files:
         if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
             continue
