@@ -61,10 +61,10 @@ def base_out_swOBA(plays: list[Dict[str, str]], player_id: str, weights: list[di
     return swOBA_numerator / swOBA_denominator
 
 def main(start_year: int, end_year: int, use_innings: bool, player_id: str):
-    if args.start_year > args.end_year:
+    if start_year > end_year:
         print("START_YEAR must be less than END_YEAR")
         sys.exit(1)
-    elif args.start_year < 1915 or args.end_year > 2021:
+    elif start_year < 1915 or end_year > 2021:
         print("START_YEAR and END_YEAR must be between 1915 and 2021. If 2022 or a future year has been added to retrosheet, feel free to edit this file.")
         sys.exit(1)
 
@@ -79,21 +79,21 @@ def main(start_year: int, end_year: int, use_innings: bool, player_id: str):
     files = sorted(os.listdir("chadwick_csv"))
     files_filtered: list[str] = []
     for file in files:
-        if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
+        if int(file[0:4]) < start_year or int(file[0:4]) > end_year:
             continue
         else:
             files_filtered.append(file)
     plays: list[Dict[str, str]] = []
 
     for file in tqdm.tqdm(files_filtered):
-        if int(file[0:4]) < args.start_year or int(file[0:4]) > args.end_year:
+        if int(file[0:4]) < start_year or int(file[0:4]) > end_year:
             continue
         file = "chadwick_csv/" + file
         with open(file, "r") as f:
             reader = csv.DictReader(f)
             plays.extend(list(reader))
 
-    if args.use_innings:
+    if use_innings:
         raise NotImplementedError()
     else:
         if not os.path.isfile("base_out_weights.csv"):
@@ -103,7 +103,7 @@ def main(start_year: int, end_year: int, use_innings: bool, player_id: str):
             weights = list(csv.DictReader(
                 f, quoting=csv.QUOTE_NONNUMERIC, quotechar='"'))
         # swOBA = round(base_out_swOBA(plays, args.player_id, list(weights)), 3)
-        return base_out_swOBA(plays, args.player_id, list(weights))
+        return base_out_swOBA(plays, player_id, list(weights))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
