@@ -35,24 +35,24 @@ def base_out_swOBA(plays: list[Dict[str, str]], player_id: str, weights: list[di
             case 3:
                 swOBA_denominator += 1
             case 14:
-                swOBA_numerator += int(weights[sit_idx]["UBB"])
+                swOBA_numerator += float(weights[sit_idx]["UBB"])
                 swOBA_denominator += 1
             case 16:
-                swOBA_numerator += int(weights[sit_idx]["HBP"])
+                swOBA_numerator += float(weights[sit_idx]["HBP"])
                 swOBA_denominator += 1
             case 19:
                 swOBA_denominator += 1
             case 20:
-                swOBA_numerator += int(weights[sit_idx]["1B"])
+                swOBA_numerator += float(weights[sit_idx]["1B"])
                 swOBA_denominator += 1
             case 21:
-                swOBA_numerator += int(weights[sit_idx]["2B"])
+                swOBA_numerator += float(weights[sit_idx]["2B"])
                 swOBA_denominator += 1
             case 22:
-                swOBA_numerator += int(weights[sit_idx]["3B"])
+                swOBA_numerator += float(weights[sit_idx]["3B"])
                 swOBA_denominator += 1
             case 23:
-                swOBA_numerator += int(weights[sit_idx]["HR"])
+                swOBA_numerator += float(weights[sit_idx]["HR"])
                 swOBA_denominator += 1
             case _: pass
 
