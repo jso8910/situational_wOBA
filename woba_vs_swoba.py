@@ -10,7 +10,7 @@ from typing import Dict
 import sys
 from pybaseball import playerid_reverse_lookup  # type: ignore
 
-print("Note. The dependencies for this aren't in requirements.txt.")
+print("Note. The dependencies for this aren't guaranteed to be in requirements.txt.")
 
 files = sorted(os.listdir("downloads"))
 files_filtered: list[str] = []
